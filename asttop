@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- encoding: utf8 -*-
 # TITLE: asttop
 # GITHUB: https://github.com/jjsearle/asttop
 # AUTHOR: Joe Searle
@@ -12,6 +13,12 @@ def main(stdscr):
   global screen2
   global title
   global c
+  global callnumlist
+  global highestnumcalls
+  global currentnumcalls
+  callnumlist = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  highestnumcalls = 10
+  currentnumcalls = 0
 
   check_root()
   check_asterisk()
@@ -36,7 +43,7 @@ def main(stdscr):
   screen.refresh() # Refresh to populate screen with data
  
   c = 49
-  thread.start_new_thread(opt_summary, ())
+  thread.start_new_thread(opt_calls, ())
   c = screen.getch() # Get char
   c2 = 0
   while c != ord('q'): # Exit loop if char caught is 'q'
@@ -44,7 +51,7 @@ def main(stdscr):
 	if c2 != c: # Stops two thread of the same function being started
 		
     		if c == 49:
-			thread.start_new_thread(opt_summary, ())
+			thread.start_new_thread(opt_calls, ())
     		elif c == 50:
 			thread.start_new_thread(opt_peers, ())
     		elif c == 51:
@@ -80,6 +87,30 @@ def check_dahdi():
 		running = 0
 	return running
 
+# Gets number of calls from asterisk
+def check_active_calls():
+        p = Popen(["asterisk", "-rx", "core show calls"], stdout=PIPE)
+        out, err = p.communicate()
+        s = out.splitlines()[0]
+        s2 = s.split(' ')[0]
+        return int(s2)
+
+# Builds the calls graph
+def gen_calls_graph():
+        count = 0
+        #block = "»"
+        block = "¤"
+	linenum = 3
+        for callnum in callnumlist:
+                value = (float(callnumlist[count]) / float(highestnumcalls)) * 100
+                prntstr =  "[" + block * int(value) + "] " + str(callnumlist[count])
+                screen2.addstr(linenum, 3, prntstr)
+                screen2.refresh()
+		if count != 29:
+                        callnumlist[count] = callnumlist[count + 1 ]
+                count = count +1
+		linenum = linenum + 1
+
 # Run an asterisk command and print the result
 def run_ast_comm(ast_comm_str):
                 proc = Popen(['asterisk', '-rx', ast_comm_str], stdout=PIPE, stderr=PIPE)
@@ -96,20 +127,22 @@ def run_ast_comm(ast_comm_str):
 
 # Prints out the toolbar string
 def print_toolbar(y, x):
-	toolbarstr = "1:SUMMARY | 2:PEERS | 3:SIP | 4:DAHDI | 5:IAX | Q:QUIT"
+	toolbarstr = "1:CALLS | 2:PEERS | 3:SIP | 4:DAHDI | 5:IAX | Q:QUIT"
   	cent_x = (x/2)-(len(toolbarstr))/2
 	screen.addstr(y - 1, cent_x, toolbarstr)
 
-def opt_summary():
+def opt_calls():
         screen.clear()
         screen2.clear()
         screen.box()
-        title = "ASTTOP - SUMMARY"
+        title = "ASTTOP - CALLS"
         screen.addstr( 0, cur_x, title)
         print_toolbar(y, x)
         while c == 49:
-                run_ast_comm("core show channels")
-                screen2.refresh()
+                currentnumcalls = check_active_calls()
+		gen_calls_graph()
+		callnumlist[29] = currentnumcalls
+		screen2.refresh()
                 time.sleep(1)
 
 def opt_iax():
