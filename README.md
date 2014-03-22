@@ -6,13 +6,23 @@ Inspired by the likes of htop and iftop, asttop is a tool used for monitoring As
 Requires
 --------
 
-Python 2.7.5+
+Python 2.7.x
 
 Installation
 ------------
 
-To install, copy 'asttop' to /usr/local/sbin
+1: Clone the asttop repo 
 
-```install
+```clone
+$ git clone https://github.com/jjsearle/asttop.git
+```
+
+2: Change directory
+```changedir
+$ cd asttop
+```
+
+3: Copy asttop to /usr/local/sbin 
+```copy
 $ sudo cp asttop /usr/local/sbin
 ```
