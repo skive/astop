@@ -13,4 +13,6 @@ Installation
 
 To install, copy 'asttop' to /usr/local/sbin
 
+```install
 $ sudo cp asttop /usr/local/sbin
+```
