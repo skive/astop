@@ -19,20 +19,21 @@ def main(stdscr):
   callnumlist = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   highestnumcalls = 10
   currentnumcalls = 0
-
+  c = 49
   check_root()
   check_asterisk()
-  title = "ASTTOP - SUMMARY"
   screen = stdscr.subwin(0, 0)
   screen2 = stdscr.subwin(0, 0)
   curses.start_color()
   curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
   curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
-  screen.bkgd(curses.color_pair(1))
+  curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+  #screen.bkgd(curses.color_pair(1))
   # Get window diminsions
   global y, x;
   y, x = screen.getmaxyx()
   global cur_x, cur_y;
+  title = "ASTTOP » "
   # Sets the cursor to center the text on screen
   cur_x = (x/2)-(len(title))/2
   cur_y = (y/2)
@@ -41,14 +42,14 @@ def main(stdscr):
   print_toolbar(y, x)
   screen.refresh() # Refresh to populate screen with data
  
-  c = 49
   thread.start_new_thread(opt_calls, ())
   c = screen.getch() # Get char
   c2 = 0
   while c != ord('q'): # Exit loop if char caught is 'q'
     
 	if c2 != c: # Stops two thread of the same function being started
-		
+		if 49 <= c <= 53:
+			screen.erase()	
     		if c == 49:
 			thread.start_new_thread(opt_calls, ())
     		elif c == 50:
@@ -59,7 +60,6 @@ def main(stdscr):
 			thread.start_new_thread(opt_dahdi, ())
     		elif c == 53:
 			thread.start_new_thread(opt_iax, ())
-    
 	c2 = c
     	c = screen.getch()
   return
@@ -98,13 +98,13 @@ def check_active_calls():
 def gen_calls_graph():
 	screen2.erase()
         count = 0
-        #block = "»"
-        block = "¤"
+        block = "»"
+        #block = "¤"
 	linenum = 3
         for callnum in callnumlist:
                 value = (float(callnumlist[count]) / float(highestnumcalls)) * 100
                 prntstr =  "[" + block * int(value) + "] " + str(callnumlist[count])
-                screen2.addstr(linenum, 3, prntstr)
+                screen2.addstr(linenum, 2, prntstr)
 		if count != 29:
                         callnumlist[count] = callnumlist[count + 1 ]
                 count = count +1
@@ -113,8 +113,7 @@ def gen_calls_graph():
 	draw_decor()
 
 def draw_decor():
-	#screen.box()
-	screen.addstr( 0, cur_x, title)
+	screen.addstr( 1, 2, title)
 	print_toolbar(y, x)
 	screen.refresh()
 
@@ -137,14 +136,42 @@ def run_ast_comm(ast_comm_str):
 
 # Prints out the toolbar string
 def print_toolbar(y, x):
-	toolbarstr = "1:CALLS | 2:PEERS | 3:SIP | 4:DAHDI | 5:IAX | Q:QUIT"
-  	cent_x = (x/2)-(len(toolbarstr))/2
-	screen.addstr(y - 1, cent_x, toolbarstr)
+	global c
+	callsstr = "1:CALLS"
+	peersstr = "2:PEERS"
+	sipstr = "3:SIP"
+	dahdistr = "4:DAHDI"
+	iaxstr = "5:IAX"
+	quitstr = "Q:QUIT"
+
+
+	if c == 49:
+		screen.addstr(1, 12, callsstr, curses.color_pair(1))
+	else:
+		screen.addstr(1, 12, callsstr, curses.color_pair(0))
+
+	if c == 50:
+		screen.addstr(1, 20, peersstr, curses.color_pair(1))
+	else:
+		screen.addstr(1, 20, peersstr, curses.color_pair(0))
+
+	if c == 51:
+		screen.addstr(1, 28, sipstr, curses.color_pair(1))
+	else:
+		screen.addstr(1, 28, sipstr, curses.color_pair(0))
+
+	if c == 52:
+		screen.addstr(1, 34, dahdistr, curses.color_pair(1))
+	else:
+		screen.addstr(1, 34, dahdistr, curses.color_pair(0))
+
+	if c == 53:
+		screen.addstr(1, 42, iaxstr, curses.color_pair(1))
+	else:
+		screen.addstr(1, 42, iaxstr, curses.color_pair(0))
 
 def opt_calls():
-        global title
         screen2.erase()
-        title = "ASTTOP - CALLS"
         draw_decor()
 	while c == 49:
                 currentnumcalls = check_active_calls()
@@ -153,42 +180,35 @@ def opt_calls():
                 time.sleep(1)
 
 def opt_iax():
-        global title
         screen2.erase()
-        title = "ASTTOP - IAX"
         draw_decor()
 	while c == 53: 
 		run_ast_comm("iax2 show netstats")
                 time.sleep(1)
 
 def opt_dahdi():
-	global title
+	global d_running
         screen2.erase()
-        title = "ASTTOP - DAHDI"
         draw_decor()
         while c == 52:
-		if check_dahdi() == 1:
+		if  check_dahdi() == 1:
                		run_ast_comm("dahdi show status")
                	else:
 			screen2.addstr(3, 2, "DAHDI service not running.")
-		
+               	
 		screen2.refresh()
-               	time.sleep(1)
+		time.sleep(1)
 	
 
 def opt_peers():
-        global title
         screen2.erase()
-        title = "ASTTOP - PEERS"
         draw_decor()
 	while c == 50:
                 run_ast_comm("sip show peers")
                 time.sleep(1)
 
 def opt_sip():
-	global title
         screen2.erase()
-        title = "ASTTOP - SIP"
         draw_decor()
 	while c == 51:
                 run_ast_comm("sip show channelstats")
