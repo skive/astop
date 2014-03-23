@@ -180,6 +180,8 @@ def print_toolbar(y, x):
 	else:
 		screen.addstr(1, 42, iaxstr, curses.color_pair(0))
 
+	screen.addstr(1, 48, quitstr, curses.color_pair(0))
+	
 def opt_calls():
         screen2.erase()
         draw_decor()
