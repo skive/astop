@@ -26,7 +26,7 @@ def main(stdscr):
   screen2 = stdscr.subwin(0, 0)
   curses.start_color()
   curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-  curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+  curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
   curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
   #screen.bkgd(curses.color_pair(1))
   # Get window diminsions
@@ -103,8 +103,18 @@ def gen_calls_graph():
 	linenum = 3
         for callnum in callnumlist:
                 value = (float(callnumlist[count]) / float(highestnumcalls)) * 100
-                prntstr =  "[" + block * int(value) + "] " + str(callnumlist[count])
-                screen2.addstr(linenum, 2, prntstr)
+                prntstr =  block * int(value)
+                screen2.addstr(linenum, 2, "[")
+		
+		if value <= 33:
+                	screen2.addstr(linenum, 3, prntstr, curses.color_pair(1))
+		elif 33 < value <= 66:
+			screen2.addstr(linenum, 3, prntstr, curses.color_pair(2))
+		elif value > 66:
+                	screen2.addstr(linenum, 3, prntstr, curses.color_pair(3))
+		
+		screen2.addstr(linenum, 104, "] " + str(callnumlist[count]))
+		
 		if count != 29:
                         callnumlist[count] = callnumlist[count + 1 ]
                 count = count +1
