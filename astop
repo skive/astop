@@ -33,7 +33,7 @@ def main(stdscr):
   global y, x;
   y, x = screen.getmaxyx()
   global cur_x, cur_y;
-  title = "ASTTOP » "
+  title = "ASTOP » "
   # Sets the cursor to center the text on screen
   cur_x = (x/2)-(len(title))/2
   cur_y = (y/2)
