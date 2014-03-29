@@ -21,7 +21,7 @@ $ git clone https://github.com/jjsearle/astop.git
 
 2: Change directory
 ```changedir
-$ cd asttop
+$ cd astop
 ```
 
 3: Copy astop to /usr/local/sbin 
