@@ -1,7 +1,7 @@
 astop
 ======
 
-![Alt text](http://i.imgur.com/FNAxJTG.png "Title Image")
+[Logo](http://i.imgur.com/FNAxJTG.png)
 
 Inspired by the likes of htop and iftop, astop is a tool used for monitoring Asterisk, the private branch exchange service for Linux.
 
