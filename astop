@@ -57,9 +57,9 @@ def main(stdscr):
     		elif c == 51:
 			thread.start_new_thread(opt_sip, ())
     		elif c == 52:
-			thread.start_new_thread(opt_, ())
-    		elif c == 53:
-			thread.start_new_thread(opt_iax, ())
+			thread.start_new_thread(opt_registry, ())
+#    		elif c == 53:
+#			thread.start_new_thread(opt_iax, ())
 	c2 = c
     	c = screen.getch()
   return
@@ -128,6 +128,9 @@ def run_ast_comm(ast_comm_str):
                                 linestr =  line.rstrip() + "\r"
                                 screen2.addstr(linenum, 2, linestr)
                                 linenum = linenum + 1
+                                if linenum > 50:
+                            	    screen2.addstr(linenum,2,'...')
+                            	    break
                 else:
                         linestr = "Failure %s:\n%s" % (return_code, proc.stderr.read())
                         screen2.addstr(linenum, 2, linestr)
@@ -141,7 +144,7 @@ def print_toolbar(y, x):
 	peersstr = "2:PEERS"
 	sipstr = "3:SIP"
 	registrystr = "4:REGISTRY"
-	iaxstr = "5:IAX"
+#	iaxstr = "5:IAX"
 	quitstr = "Q:QUIT"
 
 
@@ -166,11 +169,11 @@ def print_toolbar(y, x):
 		screen.addstr(1, 34, registrystr, curses.color_pair(0))
 
 	#if c == 53:
-		#screen.addstr(1, 42, iaxstr, curses.color_pair(1))
+		#screen.addstr(1, 45, iaxstr, curses.color_pair(1))
 	#else:
-		#screen.addstr(1, 42, iaxstr, curses.color_pair(0))
+		#screen.addstr(1, 45, iaxstr, curses.color_pair(0))
 
-	screen.addstr(1, 48, quitstr, curses.color_pair(0))
+	screen.addstr(1, 45, quitstr, curses.color_pair(0))
 	
 def opt_calls():
         screen2.erase()
@@ -181,20 +184,20 @@ def opt_calls():
 		callnumlist[29] = currentnumcalls
                 time.sleep(1)
 
-def opt_iax():
-        screen2.erase()
-        draw_decor()
-	while c == 53: 
-		run_ast_comm("iax2 show netstats")
-                time.sleep(1)
+#def opt_iax():
+#        screen2.erase()
+#        draw_decor()
+#	while c == 53: 
+#		run_ast_comm("iax2 show netstats")
+#                time.sleep(1)
 
 def opt_registry():
-	global d_running
+#	global d_running
         screen2.erase()
         draw_decor()
         while c == 52:
-		run_ast_comm("sip show registry
-		screen2.refresh()
+		run_ast_comm("sip show registry");
+#		screen2.refresh()
 		time.sleep(1)
 	
 def opt_peers():
