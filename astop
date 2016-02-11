@@ -57,7 +57,7 @@ def main(stdscr):
     		elif c == 51:
 			thread.start_new_thread(opt_sip, ())
     		elif c == 52:
-			thread.start_new_thread(opt_dahdi, ())
+			thread.start_new_thread(opt_, ())
     		elif c == 53:
 			thread.start_new_thread(opt_iax, ())
 	c2 = c
@@ -75,16 +75,6 @@ def check_asterisk():
 	out, err = p.communicate()
 	if ('asterisk' not in out):
         	sys.exit('ERROR: asterisk is not running.')
-
-# Checks if DADHI is running, returns 1 when it is, returns 0 when it isn't
-def check_dahdi():
-        p = Popen(["ps", "-Af"], stdout=PIPE)
-        out, err = p.communicate()
-        if ('dahdi' in out):
-                running = 1
-	else:
-		running = 0
-	return running
 
 # Gets number of calls from asterisk
 def check_active_calls():
@@ -150,7 +140,7 @@ def print_toolbar(y, x):
 	callsstr = "1:CALLS"
 	peersstr = "2:PEERS"
 	sipstr = "3:SIP"
-	dahdistr = "4:DAHDI"
+	registrystr = "4:REGISTRY"
 	iaxstr = "5:IAX"
 	quitstr = "Q:QUIT"
 
@@ -171,14 +161,14 @@ def print_toolbar(y, x):
 		screen.addstr(1, 28, sipstr, curses.color_pair(0))
 
 	if c == 52:
-		screen.addstr(1, 34, dahdistr, curses.color_pair(1))
+		screen.addstr(1, 34, registrystr, curses.color_pair(1))
 	else:
-		screen.addstr(1, 34, dahdistr, curses.color_pair(0))
+		screen.addstr(1, 34, registrystr, curses.color_pair(0))
 
-	if c == 53:
-		screen.addstr(1, 42, iaxstr, curses.color_pair(1))
-	else:
-		screen.addstr(1, 42, iaxstr, curses.color_pair(0))
+	#if c == 53:
+		#screen.addstr(1, 42, iaxstr, curses.color_pair(1))
+	#else:
+		#screen.addstr(1, 42, iaxstr, curses.color_pair(0))
 
 	screen.addstr(1, 48, quitstr, curses.color_pair(0))
 	
@@ -198,20 +188,15 @@ def opt_iax():
 		run_ast_comm("iax2 show netstats")
                 time.sleep(1)
 
-def opt_dahdi():
+def opt_registry():
 	global d_running
         screen2.erase()
         draw_decor()
         while c == 52:
-		if  check_dahdi() == 1:
-               		run_ast_comm("dahdi show status")
-               	else:
-			screen2.addstr(3, 2, "DAHDI service not running.")
-               	
+		run_ast_comm("sip show registry
 		screen2.refresh()
 		time.sleep(1)
 	
-
 def opt_peers():
         screen2.erase()
         draw_decor()
